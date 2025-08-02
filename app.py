@@ -94,7 +94,7 @@ if "summary" in st.session_state:
     st.subheader("📊 Keyword Comparison")
     plot_dual_wordcloud(clean_text(text), summary)
 
-    # Show pop-up modal trigger
+    # Clear All Button
     if st.button("🗑️ Clear All"):
         st.session_state["show_clear_modal"] = True
 
@@ -111,6 +111,7 @@ if st.session_state.get("show_clear_modal", False):
     with col2:
         if st.button("❌ Cancel"):
             st.session_state["show_clear_modal"] = False
+            st.rerun()
 
 # Dark Mode CSS + Custom Clear Button Style
 st.markdown("""
