@@ -54,32 +54,19 @@ if st.session_state['selected_summary']:
     st.subheader("📋 Your Summary")
     st.success(summary)
 
-    # Copy Button
-    st.markdown(
-        f"""
-        <button onclick=\"navigator.clipboard.writeText(`{summary}`)\"
-                style=\"background-color:#00ffae;color:black;padding:10px 20px;
-                       border:none;border-radius:10px;font-weight:bold;
-                       margin-top:10px;cursor:pointer;\">
-            📋 Copy Summary to Clipboard
-        </button>
-        <script>
-            document.querySelector('button').addEventListener('click', () => {{
-                alert('Copied to clipboard!');
-            }});
-        </script>
-        """,
-        unsafe_allow_html=True
-    )
+    # Copy to Clipboard Styled Button
+    if st.button("📋 Copy Summary to Clipboard"):
+        st.code(summary, language="")
+        st.toast("Copied to clipboard!")
 
     # Download Button
     st.download_button("📄 Download Summary", summary, file_name="summary.txt", mime="text/plain")
 
-    # Bullet Points
-    st.subheader("🔸 Bullet Points")
+    # Bullet Points (Shortened)
+    st.subheader("🔸 Key Bullet Points")
     bullets = generate_bullet_points(summary)
-    bullet_html = "<ul>" + "".join(f"<li>{b}</li>" for b in bullets) + "</ul>"
-    st.markdown(bullet_html, unsafe_allow_html=True)
+    for point in bullets:
+        st.markdown(f"- {point}")
 
     # Stats
     st.subheader("📈 Summary Stats")
@@ -92,11 +79,11 @@ if st.session_state['selected_summary']:
     st.subheader("📊 Keyword Comparison")
     plot_dual_wordcloud(clean_text(text), summary)
 
-# Sidebar History
+# Sidebar History (Session-Persisted)
 with st.sidebar:
     st.subheader("🕓 Summary History")
     if st.session_state['history']:
-        selected = st.selectbox("View Previous Summary:", st.session_state['history'][::-1])
+        selected = st.selectbox("Select a Summary:", st.session_state['history'][::-1])
         if selected != st.session_state['selected_summary']:
             st.session_state['selected_summary'] = selected
     else:
