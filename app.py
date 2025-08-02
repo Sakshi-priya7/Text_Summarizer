@@ -88,35 +88,8 @@ if "summary" in st.session_state:
 
 # Display modal-like confirmation
 if st.session_state.get("show_clear_modal", False):
-    st.markdown("""
-    <div style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.6);
-        z-index: 999;
-    "></div>
-    <div style="
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #161b22;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(255,255,255,0.2);
-        z-index: 1000;
-        width: 400px;
-        text-align: center;
-        border: 2px solid #DA3633;
-    ">
-        <h3 style='color: #f85149;'>⚠️ Are you sure?</h3>
-        <p style='color: #c9d1d9;'>This will clear all data and reset the app.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
+    st.markdown("### Are you sure you want to clear everything?")
+    st.markdown("This will remove all uploaded files, text, and summaries.")
     col1, col2 = st.columns([1, 1])
     with col1:
         if st.button("✅ Yes, Clear Everything"):
