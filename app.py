@@ -16,7 +16,7 @@ st.title("📝 Text Summarizer")
 uploaded_file = st.file_uploader("Upload a .txt, .pdf, or .docx file", type=["txt", "pdf", "docx"])
 text_input = st.text_area("Or paste your text here:", height=200)
 
-text = ""
+text = text_input
 if uploaded_file:
     if uploaded_file.name.endswith(".pdf"):
         text = read_pdf(uploaded_file)
