@@ -82,14 +82,34 @@ if "summary" in st.session_state:
     st.subheader("📊 Keyword Comparison")
     plot_dual_wordcloud(clean_text(text), summary)
 
-# Dark Mode CSS
+    # Clear all session state and inputs
+    if st.button("🗑️ Clear All"):
+        st.session_state.clear()
+        st.experimental_rerun()
+
+# Dark Mode CSS + Custom Clear Button Style
 st.markdown("""
 <style>
-body, .stApp { background-color: #0d1117; color: #c9d1d9; }
+body, .stApp {
+    background-color: #0d1117;
+    color: #c9d1d9;
+}
 h1, h2, h3, h4, h5, h6, .stMarkdown, label, .stTextInput label {
     color: #c9d1d9 !important;
 }
-button { background-color: #238636 !important; color: white !important; }
-.stDownloadButton { border: 1px solid #30363d; }
+button {
+    background-color: #238636 !important;
+    color: white !important;
+}
+.stDownloadButton {
+    border: 1px solid #30363d;
+}
+
+/* 🔴 Custom Red Style for "Clear All" Button */
+button[kind="secondary"] {
+    background-color: #DA3633 !important;
+    color: white !important;
+    border: none;
+}
 </style>
 """, unsafe_allow_html=True)
