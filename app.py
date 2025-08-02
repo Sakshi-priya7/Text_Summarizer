@@ -55,7 +55,7 @@ if st.session_state['history_display']:
 
     st.subheader("📋 Your Summary")
     st.markdown(f"<div id='summary-text'>{summary}</div>", unsafe_allow_html=True)
-
+    st.success("Summary generated successfully!")
     # Copy button
     st.markdown(
         f"""
