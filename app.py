@@ -82,11 +82,17 @@ if "summary" in st.session_state:
     st.subheader("📊 Keyword Comparison")
     plot_dual_wordcloud(clean_text(text), summary)
 
-    # Clear all session state and inputs
-    if st.button("🗑️ Clear All"):
-        st.session_state.clear()
-        st.experimental_rerun()
+    # Clear All Confirmation Section
+    with st.expander("🗑️ Clear All Options"):
+        st.warning("This will clear all text, summary, settings, and history.")
+        confirm_clear = st.checkbox("Yes, I want to clear everything.")
 
+        if confirm_clear:
+            if st.button("✅ Confirm Clear"):
+                for key in list(st.session_state.keys()):
+                    del st.session_state[key]
+                st.rerun()
+                
 # Dark Mode CSS + Custom Clear Button Style
 st.markdown("""
 <style>
