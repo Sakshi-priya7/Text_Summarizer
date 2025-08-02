@@ -24,13 +24,16 @@ if uploaded_file:
         text = read_docx(uploaded_file)
     elif uploaded_file.name.endswith(".txt"):
         text = uploaded_file.read().decode("utf-8")
-if not text and text_input:
+elif text_input:
     text = text_input
+
+# Initialize summary variable
+summary = ""
 
 # Main UI
 if text:
     st.markdown("---")
-    st.markdown("🔍 Summarization Settings:")
+    st.markdown("🔍 **Summarization Settings:**")
 
     length = st.slider("Summary Length (approx. words)", 50, 500, step=10, value=150)
     tone = st.selectbox("Select Tone:", ["Neutral", "Formal", "Casual", "Simple"])
@@ -39,20 +42,25 @@ if text:
         cleaned = clean_text(text)
         with st.spinner("Summarizing..."):
             summary = abstractive_summary(cleaned, word_limit=length, tone=tone.lower())
+        st.session_state["summary"] = summary
 
-        st.subheader("📋 Your Summary")
-        st.success(summary)
+# Display summary if available
+if "summary" in st.session_state:
+    summary = st.session_state["summary"]
 
-    # Show in a disabled text area (read-only)
+    st.subheader("📋 Your Summary")
+    st.success(summary)
+
+    # Show in a read-only textarea
     st.text_area("📄 Copy from here", summary, height=150)
 
-    # Native "Copy" simulation (works locally with pyperclip)
+    # "Copy Summary" Button (works locally with pyperclip)
     if st.button("📋 Copy Summary"):
         try:
             pyperclip.copy(summary)
-            st.success("Summary copied to clipboard!")
+            st.success("✅ Summary copied to clipboard!")
         except Exception:
-            st.warning("Clipboard copy not supported in Streamlit Cloud. Please copy manually.")
+            st.warning("⚠️ Clipboard copy not supported in Streamlit Cloud. Please copy manually.")
 
     # Download Button
     st.download_button("📄 Download Summary", summary, file_name="summary.txt", mime="text/plain")
@@ -74,7 +82,7 @@ if text:
     st.subheader("📊 Keyword Comparison")
     plot_dual_wordcloud(clean_text(text), summary)
 
-# Custom Dark CSS
+# Dark Mode CSS
 st.markdown("""
 <style>
 body, .stApp { background-color: #0d1117; color: #c9d1d9; }
