@@ -1,3 +1,4 @@
+# ✅ FINAL WORKING VERSION: app.py
 import streamlit as st
 from summarizer import (
     abstractive_summary,
@@ -7,18 +8,17 @@ from summarizer import (
 )
 from utils import read_pdf, read_docx, clean_text
 
-# Session state setup
+# Session Setup
 if 'history' not in st.session_state:
     st.session_state['history'] = []
-
 if 'selected_summary' not in st.session_state:
     st.session_state['selected_summary'] = ""
 
-# App layout
+# Page Setup
 st.set_page_config(page_title="Text Summarizer", layout="wide")
 st.title("📝 Text Summarizer")
 
-# Input section
+# Upload Section
 uploaded_file = st.file_uploader("Upload a .txt, .pdf, or .docx file", type=["txt", "pdf", "docx"])
 text_input = st.text_area("Or paste your text here:", height=200)
 
@@ -30,36 +30,37 @@ if uploaded_file:
         text = read_docx(uploaded_file)
     elif uploaded_file.name.endswith(".txt"):
         text = uploaded_file.read().decode("utf-8")
-elif text_input:
+if not text and text_input:
     text = text_input
 
-# Main section
+# Main UI
 if text:
     st.markdown("---")
     st.markdown("🔍 **Summarization Settings:**")
+
     length = st.slider("Summary Length (approx. words)", 50, 500, step=10, value=150)
-    tone = st.selectbox("Select Tone: ", ["Neutral", "Formal", "Casual", "Simple"])
+    tone = st.selectbox("Select Tone:", ["Neutral", "Formal", "Casual", "Simple"])
 
     if st.button("🚀 Generate Summary"):
         cleaned = clean_text(text)
         with st.spinner("Summarizing..."):
             summary = abstractive_summary(cleaned, word_limit=length, tone=tone.lower())
-        st.session_state.history.append(summary)
-        st.session_state.selected_summary = summary
+        st.session_state['selected_summary'] = summary
+        st.session_state['history'].append(summary)
 
-# Show current summary
+# Display Summary
 if st.session_state['selected_summary']:
     summary = st.session_state['selected_summary']
     st.subheader("📋 Your Summary")
     st.success(summary)
 
-    # Copy to clipboard
+    # Copy Button
     st.markdown(
         f"""
-        <button onclick="navigator.clipboard.writeText(`{summary}`)"
-                style="background-color:#00ffae;color:black;padding:10px 20px;
+        <button onclick=\"navigator.clipboard.writeText(`{summary}`)\"
+                style=\"background-color:#00ffae;color:black;padding:10px 20px;
                        border:none;border-radius:10px;font-weight:bold;
-                       margin-top:10px;cursor:pointer;">
+                       margin-top:10px;cursor:pointer;\">
             📋 Copy Summary to Clipboard
         </button>
         <script>
@@ -71,10 +72,10 @@ if st.session_state['selected_summary']:
         unsafe_allow_html=True
     )
 
-    # Download option
+    # Download Button
     st.download_button("📄 Download Summary", summary, file_name="summary.txt", mime="text/plain")
 
-    # Bullet points
+    # Bullet Points
     st.subheader("🔸 Bullet Points")
     bullets = generate_bullet_points(summary)
     bullet_html = "<ul>" + "".join(f"<li>{b}</li>" for b in bullets) + "</ul>"
@@ -87,25 +88,21 @@ if st.session_state['selected_summary']:
     st.write(f"📏 **Sentence Count:** {stats['Sentence Count']}")
     st.write(f"🔑 **Top Keywords:** {', '.join(stats['Top Keywords'])}")
 
-    # Word clouds
+    # Word Clouds
     st.subheader("📊 Keyword Comparison")
     plot_dual_wordcloud(clean_text(text), summary)
 
-# Sidebar history
+# Sidebar History
 with st.sidebar:
     st.subheader("🕓 Summary History")
-    if st.session_state.history:
-        selected = st.selectbox(
-            "Select a previous summary",
-            options=st.session_state.history[::-1],
-            index=0,
-        )
+    if st.session_state['history']:
+        selected = st.selectbox("View Previous Summary:", st.session_state['history'][::-1])
         if selected != st.session_state['selected_summary']:
             st.session_state['selected_summary'] = selected
     else:
-        st.info("No summaries yet. Generate one!")
+        st.info("No summaries generated yet.")
 
-# Custom CSS for dark mode
+# Custom Dark CSS
 st.markdown("""
 <style>
 body, .stApp { background-color: #0d1117; color: #c9d1d9; }
