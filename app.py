@@ -48,7 +48,6 @@ if text:
         # Show summary
         st.subheader("📋 Your Summary")
         st.markdown(f"<div id='summary-text'>{summary}</div>", unsafe_allow_html=True)
-        st.success(summary)
 
         # Copy Button
         st.markdown(
@@ -76,8 +75,8 @@ if text:
 
         # Bullet Points
         st.subheader("🔸 Bullet Points")
-        bullets = generate_bullet_points(summary)
-        st.markdown(bullets)
+        bullets = generate_bullet_points(summary).replace('\n', '<br>')
+        st.markdown(bullets, unsafe_allow_html=True)
 
         # Stats
         st.subheader("📈 Summary Stats")
