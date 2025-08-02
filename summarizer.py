@@ -28,10 +28,29 @@ def abstractive_summary(text, word_limit=150, tone="neutral"):
     return result[0]['summary_text']
 
 # 🔸 Generate Bullet Point List from Summary
-def generate_bullet_points(summary):
-    sentences = re.split(r'(?<=[.?!])\s+', summary.strip())
-    bullets = [f"• {s}" for s in sentences if len(s.strip()) > 0]
-    return '\n'.join(bullets)
+
+def generate_bullet_points(text):
+    # Step 1: Summarize into short sentences first
+    mini_summary = summarizer(text, max_length=60, min_length=25, do_sample=False)[0]['summary_text']
+
+    # Step 2: Extract short phrases or rephrase to insight-style lines
+    phrases = re.split(r'(?<=[.?!])\s+', mini_summary.strip())
+
+    # Step 3: Clean and shorten key phrases
+    bullets = []
+    for phrase in phrases:
+        clean = phrase.strip()
+        if len(clean) > 10 and len(clean.split()) <= 12:
+            bullets.append(clean)
+
+    # Step 4: Add emojis to emphasize meaning
+    emojis = ["💡", "🧠", "💪", "🎯", "🔍", "🐦", "🛠️", "🚀", "📘"]
+    final_bullets = []
+    for i, line in enumerate(bullets[:5]):  # Top 5 points max
+        final_bullets.append(f"{emojis[i % len(emojis)]} {line}")
+
+    return final_bullets
+
 
 # 🔸 Word Count, Sentence Count, Keyword Stats
 def get_summary_stats(text):
