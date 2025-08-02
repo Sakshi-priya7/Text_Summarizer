@@ -48,6 +48,7 @@ if text:
         # Show summary
         st.subheader("📋 Your Summary")
         st.markdown(f"<div id='summary-text'>{summary}</div>", unsafe_allow_html=True)
+        st.success(summary)
 
         # Copy Button
         st.markdown(
