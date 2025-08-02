@@ -3,13 +3,6 @@ import io
 from summarizer import abstractive_summary, extractive_summary
 from utils import read_pdf, read_docx, clean_text
 
-import nltk
-
-try:
-    nltk.data.find("tokenizers/punkt")
-except LookupError:
-    nltk.download("punkt")
-
 st.set_page_config(page_title="Text Summarizer", layout="wide")
 st.title("Text Summarizer 📝")
 

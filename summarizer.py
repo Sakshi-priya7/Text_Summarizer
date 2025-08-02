@@ -2,6 +2,12 @@ from transformers import pipeline
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lsa import LsaSummarizer
+import nltk
+
+try:
+    nltk.data.find("tokenizers/punkt")
+except LookupError:
+    nltk.download("punkt")
 
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
