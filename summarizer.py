@@ -3,6 +3,7 @@ from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lsa import LsaSummarizer
 
+summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 def abstractive_summary(text, word_limit=150, tone="neutral"):
     # Tone prompt
@@ -21,7 +22,6 @@ def abstractive_summary(text, word_limit=150, tone="neutral"):
     max_tokens = int(word_limit * 1.3)
     min_tokens = int(word_limit * 1.0)
 
-    summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
     summary = summarizer(full_prompt, max_length=max_tokens, min_length=min_tokens, do_sample=False)
     return summary[0]['summary_text']
 
