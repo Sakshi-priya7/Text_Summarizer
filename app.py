@@ -7,12 +7,6 @@ from summarizer import (
 )
 from utils import read_pdf, read_docx, clean_text
 
-# Session Setup
-if 'history' not in st.session_state:
-    st.session_state['history'] = []
-if 'selected_summary' not in st.session_state:
-    st.session_state['selected_summary'] = ""
-
 # Page Setup
 st.set_page_config(page_title="Text Summarizer", layout="wide")
 st.title("📝 Text Summarizer")
@@ -84,16 +78,6 @@ if st.session_state['selected_summary']:
     # Word Clouds
     st.subheader("📊 Keyword Comparison")
     plot_dual_wordcloud(clean_text(text), summary)
-
-# Sidebar History
-with st.sidebar:
-    st.subheader("🕓 Summary History")
-    if st.session_state['history']:
-        selected = st.selectbox("View Previous Summary:", st.session_state['history'][::-1])
-        if selected != st.session_state['selected_summary']:
-            st.session_state['selected_summary'] = selected
-    else:
-        st.info("No summaries generated yet.")
 
 # Custom Dark CSS
 st.markdown("""
