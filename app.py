@@ -2,6 +2,11 @@ import streamlit as st
 import io
 from summarizer import abstractive_summary
 from utils import read_pdf, read_docx, clean_text
+from summarizer import abstractive_summary, generate_bullet_points, get_summary_stats, plot_dual_wordcloud
+
+if 'history' not in st.session_state:
+    st.session_state['history'] = []
+
 
 st.set_page_config(page_title="Text Summarizer", layout="wide")
 st.title("Text Summarizer 📝")
@@ -41,6 +46,29 @@ if text:
             file_name="summary.txt",
             mime="text/plain"
         )
+        # 🕓 Save to session history
+        st.session_state['history'].append(summary)
+
+        # 📊 Summary Stats
+        stats = get_summary_stats(summary)
+        st.subheader("📈 Summary Stats")
+        st.write(f"📝 **Word Count:** {stats['Word Count']}")
+        st.write(f"📏 **Sentence Count:** {stats['Sentence Count']}")
+        st.write(f"🔑 **Top Keywords:** {', '.join(stats['Top Keywords'])}")
+
+        # 🔍 Side-by-side Word Clouds
+        st.subheader("📊 Keyword Comparison")
+        plot_dual_wordcloud(cleaned, summary)
+
+
+with st.sidebar:
+    st.subheader("🕓 Summary History")
+    if st.session_state['history']:
+        for i, s in enumerate(reversed(st.session_state['history'][-5:]), 1):
+            st.markdown(f"**#{i}:** {s[:80]}{'...' if len(s) > 80 else ''}")
+    else:
+        st.info("No summaries generated yet.")
+
 
 # Custom dark theme CSS
 dark_css = """
@@ -66,3 +94,21 @@ button {
 """
 
 st.markdown(dark_css, unsafe_allow_html=True)
+
+st.markdown(
+    f"""
+    <button onclick="navigator.clipboard.writeText(`{summary}`)" 
+            style="background-color:#00ffae;color:black;padding:10px 20px;
+                   border:none;border-radius:10px;font-weight:bold;
+                   margin-top:10px;cursor:pointer;">
+        📋 Copy Summary to Clipboard
+    </button>
+    """,
+    unsafe_allow_html=True
+)
+
+# 🧠 Show bullet points (generated from summary)
+st.subheader("🔸 Bullet Points")
+bullets = generate_bullet_points(summary)
+st.markdown(bullets)
+
