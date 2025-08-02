@@ -1,11 +1,10 @@
 import streamlit as st
 import io
-from fpdf import FPDF
 from summarizer import abstractive_summary, extractive_summary
 from utils import read_pdf, read_docx, clean_text
 
-st.set_page_config(page_title="Pro Text Summarizer", layout="wide")
-st.title("📝 Pro-Level Text Summarizer (Like QuillBot)")
+st.set_page_config(page_title="Text Summarizer", layout="wide")
+st.title("Text Summarizer 📝")
 
 uploaded_file = st.file_uploader("Upload a .txt, .pdf, or .docx file", type=["txt", "pdf", "docx"])
 text_input = st.text_area("Or paste your text here:", height=200)
