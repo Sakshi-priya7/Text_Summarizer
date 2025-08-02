@@ -1,6 +1,6 @@
 import streamlit as st
 import io
-from summarizer import abstractive_summary, extractive_summary
+from summarizer import abstractive_summary
 from utils import read_pdf, read_docx, clean_text
 
 st.set_page_config(page_title="Text Summarizer", layout="wide")
