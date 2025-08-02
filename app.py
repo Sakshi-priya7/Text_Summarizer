@@ -15,6 +15,9 @@ st.title("📝 Text Summarizer")
 # Upload Section
 uploaded_file = st.file_uploader("Upload a .txt, .pdf, or .docx file", type=["txt", "pdf", "docx"])
 
+def clear_text_input():
+    st.session_state["text_box"] = ""
+
 # 🆕 Add text input + clear text button side-by-side
 col1, col2 = st.columns([6, 1])
 
@@ -22,9 +25,7 @@ with col1:
     text_input = st.text_area("Or paste your text here:", height=200, key="text_box")
 
 with col2:
-    if st.button("❌ Clear Text"):
-        st.session_state["text_box"] = ""
-        st.rerun()
+    st.button("❌ Clear Text", on_click=clear_text_input)
 
 text = text_input or ""
 
