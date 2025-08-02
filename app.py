@@ -1,4 +1,5 @@
 import streamlit as st
+import pyperclip
 from summarizer import (
     abstractive_summary,
     generate_bullet_points,
@@ -38,26 +39,20 @@ if text:
         cleaned = clean_text(text)
         with st.spinner("Summarizing..."):
             summary = abstractive_summary(cleaned, word_limit=length, tone=tone.lower())
-        st.session_state['selected_summary'] = summary
-        st.session_state['history'].append(summary)
 
-# Display Summary
-if st.session_state['selected_summary']:
-    summary = st.session_state['selected_summary']
-    st.subheader("📋 Your Summary")
-    st.success(summary)
+        st.subheader("📋 Your Summary")
+        st.success(summary)
 
-        # Copy Button (Clickable with JS)
-    st.markdown("""
-    <input type="text" value="{0}" id="copyTarget" style="position: absolute; left: -1000px;">
-    <button onclick="navigator.clipboard.writeText(document.getElementById('copyTarget').value)"
-            style="background-color:#00ffae;color:black;padding:10px 20px;
-                   border:none;border-radius:10px;font-weight:bold;
-                   margin-top:10px;cursor:pointer;">
-        📋 Copy Summary to Clipboard
-    </button>
-    """.format(summary.replace('"', '&quot;').replace("'", "&apos;")),
-    unsafe_allow_html=True)
+    # Show in a disabled text area (read-only)
+    st.text_area("📄 Copy from here", summary, height=150)
+
+    # Native "Copy" simulation (works locally with pyperclip)
+    if st.button("📋 Copy Summary"):
+        try:
+            pyperclip.copy(summary)
+            st.success("Summary copied to clipboard!")
+        except Exception:
+            st.warning("Clipboard copy not supported in Streamlit Cloud. Please copy manually.")
 
     # Download Button
     st.download_button("📄 Download Summary", summary, file_name="summary.txt", mime="text/plain")
