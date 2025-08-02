@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_copy_to_clipboard import copy_to_clipboard
 from summarizer import (
     abstractive_summary,
     generate_bullet_points,
@@ -46,8 +45,7 @@ if text:
         with st.spinner("Summarizing..."):
             summary = abstractive_summary(cleaned, word_limit=length, tone=tone.lower())
         st.session_state['selected_summary'] = summary
-        if summary not in st.session_state['history']:
-            st.session_state['history'].append(summary)
+        st.session_state['history'].append(summary)
 
 # Display Summary
 if st.session_state['selected_summary']:
@@ -55,26 +53,35 @@ if st.session_state['selected_summary']:
     st.subheader("📋 Your Summary")
     st.success(summary)
 
-    # 📋 Copy Button
-    copy_to_clipboard(summary, "📋 Copy Summary")
+        # Copy Button (Clickable with JS)
+    st.markdown("""
+    <input type="text" value="{0}" id="copyTarget" style="position: absolute; left: -1000px;">
+    <button onclick="navigator.clipboard.writeText(document.getElementById('copyTarget').value)"
+            style="background-color:#00ffae;color:black;padding:10px 20px;
+                   border:none;border-radius:10px;font-weight:bold;
+                   margin-top:10px;cursor:pointer;">
+        📋 Copy Summary to Clipboard
+    </button>
+    """.format(summary.replace('"', '&quot;').replace("'", "&apos;")),
+    unsafe_allow_html=True)
 
-    # 📄 Download Button
+    # Download Button
     st.download_button("📄 Download Summary", summary, file_name="summary.txt", mime="text/plain")
 
-    # 🔸 Bullet Points
+    # Bullet Points
     st.subheader("🔸 Bullet Points")
     bullets = generate_bullet_points(summary)
-    for point in bullets:
-        st.markdown(f"- {point}")
+    bullet_html = "<ul>" + "".join(f"<li>{b}</li>" for b in bullets) + "</ul>"
+    st.markdown(bullet_html, unsafe_allow_html=True)
 
-    # 📈 Stats
+    # Stats
     st.subheader("📈 Summary Stats")
     stats = get_summary_stats(summary)
     st.write(f"📝 Word Count: {stats['Word Count']}")
     st.write(f"📏 Sentence Count: {stats['Sentence Count']}")
     st.write(f"🔑 Top Keywords: {', '.join(stats['Top Keywords'])}")
 
-    # 📊 Word Clouds
+    # Word Clouds
     st.subheader("📊 Keyword Comparison")
     plot_dual_wordcloud(clean_text(text), summary)
 
@@ -88,7 +95,7 @@ with st.sidebar:
     else:
         st.info("No summaries generated yet.")
 
-# Custom Dark Theme CSS
+# Custom Dark CSS
 st.markdown("""
 <style>
 body, .stApp { background-color: #0d1117; color: #c9d1d9; }
