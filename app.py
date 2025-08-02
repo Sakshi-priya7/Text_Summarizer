@@ -31,14 +31,14 @@ elif text_input:
 summary = ""
 
 # Main UI
-if text:
-    st.markdown("---")
-    st.markdown("🔍 **Summarization Settings:**")
 
-    length = st.slider("Summary Length (approx. words)", 50, 500, step=10, value=150)
-    tone = st.selectbox("Select Tone:", ["Neutral", "Formal", "Casual", "Simple"])
+st.markdown("---")
+st.markdown("🔍 **Summarization Settings:**")
 
-    if st.button("🚀 Generate Summary"):
+length = st.slider("Summary Length (approx. words)", 50, 500, step=10, value=150)
+tone = st.selectbox("Select Tone:", ["Neutral", "Formal", "Casual", "Simple"])
+
+if st.button("🚀 Generate Summary"):
         cleaned = clean_text(text)
         with st.spinner("Summarizing..."):
             summary = abstractive_summary(cleaned, word_limit=length, tone=tone.lower())
