@@ -12,7 +12,7 @@ A professional NLP-based text summarizer that mimics QuillBot using both extract
 ## 📦 Setup Instructions
 
 ```bash
-git clone https://github.com/yourusername/pro-text-summarizer.git
-cd pro-text-summarizer
+git clone https://github.com/yourusername/Text-Summarizer.git
+cd Text-Summarizer
 pip install -r requirements.txt
 streamlit run app.py
