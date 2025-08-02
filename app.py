@@ -19,11 +19,11 @@ uploaded_file = st.file_uploader("Upload a .txt, .pdf, or .docx file", type=["tx
 col1, col2 = st.columns([6, 1])
 
 with col1:
-    text_input = st.text_area("Or paste your text here:", height=200)
+    text_input = st.text_area("Or paste your text here:", height=200, key="text_box")
 
 with col2:
     if st.button("❌ Clear Text"):
-        text_input = ""
+        st.session_state["text_box"] = ""
         st.rerun()
 
 text = text_input or ""
