@@ -7,15 +7,18 @@ from summarizer import (
 )
 from utils import read_pdf, read_docx, clean_text
 
-# Session State Init
+# Initialize session state
 if 'history' not in st.session_state:
     st.session_state['history'] = []
 
-# Page Setup
+if 'history_display' not in st.session_state:
+    st.session_state['history_display'] = ""
+
+# App config
 st.set_page_config(page_title="Text Summarizer", layout="wide")
 st.title("📝 Text Summarizer")
 
-# Upload Section
+# --- File Upload & Text Input ---
 uploaded_file = st.file_uploader("Upload a .txt, .pdf, or .docx file", type=["txt", "pdf", "docx"])
 text_input = st.text_area("Or paste your text here:", height=200)
 
@@ -27,15 +30,13 @@ if uploaded_file:
         text = read_docx(uploaded_file)
     elif uploaded_file.name.endswith(".txt"):
         text = uploaded_file.read().decode("utf-8")
-
-if not text and text_input:
+elif text_input:
     text = text_input
 
-# MAIN ACTION
+# --- Main Summarization UI ---
 if text:
     st.markdown("---")
     st.markdown("🔍 **Summarization Settings:**")
-
     length = st.slider("Summary Length (approx. words)", 50, 500, step=10, value=150)
     tone = st.selectbox("Select Tone: ", ["Neutral", "Formal", "Casual", "Simple"])
 
@@ -45,61 +46,60 @@ if text:
         with st.spinner("Summarizing..."):
             summary = abstractive_summary(cleaned, word_limit=length, tone=tone.lower())
 
-        # Show summary
-        st.subheader("📋 Your Summary")
-        st.markdown(f"<div id='summary-text'>{summary}</div>", unsafe_allow_html=True)
-        st.success(summary)
-
-        # Copy Button
-        st.markdown(
-            """
-            <button onclick="navigator.clipboard.writeText(document.getElementById('summary-text').innerText)"
-                    style="background-color:#00ffae;color:black;padding:10px 20px;
-                           border:none;border-radius:10px;font-weight:bold;
-                           margin-top:10px;cursor:pointer;">
-                📋 Copy Summary to Clipboard
-            </button>
-            """,
-            unsafe_allow_html=True
-        )
-
-        # Download as TXT
-        st.download_button(
-            label="📄 Download Summary as .txt",
-            data=summary,
-            file_name="summary.txt",
-            mime="text/plain"
-        )
-
-        # Save to session history
         st.session_state['history'].append(summary)
+        st.session_state['history_display'] = summary
 
-        # Bullet Points
-        st.subheader("🔸 Bullet Points")
-        bullets = generate_bullet_points(summary).replace('\n', '<br>')
-        st.markdown(bullets, unsafe_allow_html=True)
+# --- Summary Output ---
+if st.session_state['history_display']:
+    summary = st.session_state['history_display']
 
-        # Stats
-        st.subheader("📈 Summary Stats")
-        stats = get_summary_stats(summary)
-        st.write(f"📝 **Word Count:** {stats['Word Count']}")
-        st.write(f"📏 **Sentence Count:** {stats['Sentence Count']}")
-        st.write(f"🔑 **Top Keywords:** {', '.join(stats['Top Keywords'])}")
+    st.subheader("📋 Your Summary")
+    st.markdown(f"<div id='summary-text'>{summary}</div>", unsafe_allow_html=True)
 
-        # Word Clouds
-        st.subheader("📊 Keyword Comparison")
-        plot_dual_wordcloud(cleaned, summary)
+    # Copy button
+    st.markdown(
+        f"""
+        <button onclick="navigator.clipboard.writeText(document.getElementById('summary-text').innerText)"
+                style="background-color:#00ffae;color:black;padding:10px 20px;
+                       border:none;border-radius:10px;font-weight:bold;
+                       margin-top:10px;cursor:pointer;">
+            📋 Copy Summary to Clipboard
+        </button>
+        """,
+        unsafe_allow_html=True
+    )
 
-# Sidebar
+    # Download summary
+    st.download_button("📄 Download Summary as .txt", data=summary, file_name="summary.txt", mime="text/plain")
+
+    # Bullet points
+    st.subheader("🔸 Bullet Points")
+    bullets = generate_bullet_points(summary)
+    bullet_html = "<ul>" + "".join([f"<li>{b}</li>" for b in bullets]) + "</ul>"
+    st.markdown(bullet_html, unsafe_allow_html=True)
+
+    # Stats
+    st.subheader("📈 Summary Stats")
+    stats = get_summary_stats(summary)
+    st.write(f"📝 **Word Count:** {stats['Word Count']}")
+    st.write(f"📏 **Sentence Count:** {stats['Sentence Count']}")
+    st.write(f"🔑 **Top Keywords:** {', '.join(stats['Top Keywords'])}")
+
+    # Word Cloud
+    st.subheader("📊 Keyword Comparison")
+    plot_dual_wordcloud(clean_text(text), summary)
+
+# --- Sidebar History ---
 with st.sidebar:
     st.subheader("🕓 Summary History")
     if st.session_state['history']:
-        for i, s in enumerate(reversed(st.session_state['history'][-5:]), 1):
-            st.markdown(f"**#{i}:** {s[:80]}{'...' if len(s) > 80 else ''}")
+        selected = st.selectbox("📚 Select Previous Summary", options=st.session_state['history'][::-1])
+        if selected:
+            st.session_state['history_display'] = selected
     else:
         st.info("No summaries generated yet.")
 
-# Dark Theme Styling
+# --- Dark Mode Styling ---
 dark_css = """
 <style>
 body {
