@@ -7,3 +7,4 @@ PyMuPDF
 fpdf2>=2.7.7
 wordcloud
 matplotlib
+docx2txt

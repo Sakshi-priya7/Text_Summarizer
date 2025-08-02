@@ -1,15 +1,21 @@
 import streamlit as st
-import io
-from summarizer import abstractive_summary, generate_bullet_points, get_summary_stats, plot_dual_wordcloud
+from summarizer import (
+    abstractive_summary,
+    generate_bullet_points,
+    get_summary_stats,
+    plot_dual_wordcloud
+)
 from utils import read_pdf, read_docx, clean_text
 
-# Initialize session state
+# Session State Init
 if 'history' not in st.session_state:
     st.session_state['history'] = []
 
+# Page Setup
 st.set_page_config(page_title="Text Summarizer", layout="wide")
-st.title("Text Summarizer 📝")
+st.title("📝 Text Summarizer")
 
+# Upload Section
 uploaded_file = st.file_uploader("Upload a .txt, .pdf, or .docx file", type=["txt", "pdf", "docx"])
 text_input = st.text_area("Or paste your text here:", height=200)
 
@@ -25,31 +31,26 @@ if uploaded_file:
 if not text and text_input:
     text = text_input
 
+# MAIN ACTION
 if text:
     st.markdown("---")
-    st.markdown("🔍 **Summarization:**")
-    length = st.slider("Summary Length (approx. words)", min_value=50, max_value=500, step=10, value=150)
+    st.markdown("🔍 **Summarization Settings:**")
+
+    length = st.slider("Summary Length (approx. words)", 50, 500, step=10, value=150)
     tone = st.selectbox("Select Tone: ", ["Neutral", "Formal", "Casual", "Simple"])
 
+    st.markdown("### 🧠 Ready to Summarize?")
     if st.button("🚀 Generate Summary"):
         cleaned = clean_text(text)
         with st.spinner("Summarizing..."):
             summary = abstractive_summary(cleaned, word_limit=length, tone=tone.lower())
 
-        # Display Summary
+        # Show summary
         st.subheader("📋 Your Summary")
         st.markdown(f"<div id='summary-text'>{summary}</div>", unsafe_allow_html=True)
         st.success(summary)
 
-        # Download Summary
-        st.download_button(
-            label="📄 Download Summary as .txt",
-            data=summary,
-            file_name="summary.txt",
-            mime="text/plain"
-        )
-
-        # Copy to Clipboard Button
+        # Copy Button
         st.markdown(
             """
             <button onclick="navigator.clipboard.writeText(document.getElementById('summary-text').innerText)"
@@ -62,7 +63,15 @@ if text:
             unsafe_allow_html=True
         )
 
-        # Save to history
+        # Download as TXT
+        st.download_button(
+            label="📄 Download Summary as .txt",
+            data=summary,
+            file_name="summary.txt",
+            mime="text/plain"
+        )
+
+        # Save to session history
         st.session_state['history'].append(summary)
 
         # Bullet Points
@@ -70,7 +79,7 @@ if text:
         bullets = generate_bullet_points(summary)
         st.markdown(bullets)
 
-        # Summary Stats
+        # Stats
         st.subheader("📈 Summary Stats")
         stats = get_summary_stats(summary)
         st.write(f"📝 **Word Count:** {stats['Word Count']}")
@@ -81,7 +90,7 @@ if text:
         st.subheader("📊 Keyword Comparison")
         plot_dual_wordcloud(cleaned, summary)
 
-# Sidebar History
+# Sidebar
 with st.sidebar:
     st.subheader("🕓 Summary History")
     if st.session_state['history']:
@@ -90,7 +99,7 @@ with st.sidebar:
     else:
         st.info("No summaries generated yet.")
 
-# Custom CSS (Dark Mode)
+# Dark Theme Styling
 dark_css = """
 <style>
 body {
