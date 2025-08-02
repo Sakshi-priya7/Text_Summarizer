@@ -1,23 +1,31 @@
-# Byte-compiled / optimized / DLL files
+# ========== Python ==========
 __pycache__/
 *.py[cod]
 *.so
 
-# Virtual environment
+# ========== Virtual Environments ==========
 env/
-venv/
 .venv/
+venv/
 
-# Streamlit cache
-.streamlit/
-
-# Jupyter Notebooks checkpoints
-.ipynb_checkpoints/
-
-# IDEs & editors
+# ========== IDE Configs ==========
 .vscode/
 .idea/
 
-# OS files
+# ========== Streamlit ==========
+.streamlit/
+*.pyc
+
+# ========== OS Generated ==========
 .DS_Store
 Thumbs.db
+
+# ========== Logs / Cache ==========
+*.log
+*.sqlite3
+*.db
+*.cache/
+.cache/
+
+# ========== Notebooks ==========
+.ipynb_checkpoints/

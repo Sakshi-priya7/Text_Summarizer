@@ -5,4 +5,4 @@ nltk>=3.8.1
 streamlit>=1.35.0
 python-docx
 PyMuPDF
-fpdf
+fpdf2>=2.7.7

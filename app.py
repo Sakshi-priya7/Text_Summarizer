@@ -47,27 +47,6 @@ if text:
             mime="text/plain"
         )
 
-        # Download as PDF
-        def generate_pdf(text):
-            pdf = FPDF()
-            pdf.add_page()
-            pdf.set_auto_page_break(auto=True, margin=15)
-            pdf.set_font("Arial", size=12)
-            for line in text.split('\n'):
-                pdf.multi_cell(0, 10, line)
-            buffer = io.BytesIO()
-            pdf.output(buffer)
-            buffer.seek(0)
-            return buffer
-
-        pdf_file = generate_pdf(summary)
-        st.download_button(
-            label="🧾 Download Summary as .pdf",
-            data=pdf_file,
-            file_name="summary.pdf",
-            mime="application/pdf"
-        )
-
 # Custom dark theme CSS
 dark_css = """
 <style>
