@@ -24,7 +24,7 @@ with col1:
 with col2:
     if st.button("❌ Clear Text"):
         text_input = ""
-        st.experimental_rerun()
+        st.rerun()
 
 text = text_input or ""
 
