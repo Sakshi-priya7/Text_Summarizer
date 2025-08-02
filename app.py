@@ -39,10 +39,10 @@ length = st.slider("Summary Length (approx. words)", 50, 500, step=10, value=150
 tone = st.selectbox("Select Tone:", ["Neutral", "Formal", "Casual", "Simple"])
 
 if st.button("🚀 Generate Summary"):
-        cleaned = clean_text(text)
-        with st.spinner("Summarizing..."):
-            summary = abstractive_summary(cleaned, word_limit=length, tone=tone.lower())
-        st.session_state["summary"] = summary
+    cleaned = clean_text(text)
+    with st.spinner("Summarizing..."):
+        summary = abstractive_summary(cleaned, word_limit=length, tone=tone.lower())
+    st.session_state["summary"] = summary
 
 # Display summary if available
 if "summary" in st.session_state:
@@ -82,17 +82,51 @@ if "summary" in st.session_state:
     st.subheader("📊 Keyword Comparison")
     plot_dual_wordcloud(clean_text(text), summary)
 
-    # Clear All Confirmation Section
-    with st.expander("🗑️ Clear All Options"):
-        st.warning("This will clear all text, summary, settings, and history.")
-        confirm_clear = st.checkbox("Yes, I want to clear everything.")
+    # Show pop-up modal trigger
+    if st.button("🗑️ Clear All"):
+        st.session_state["show_clear_modal"] = True
 
-        if confirm_clear:
-            if st.button("✅ Confirm Clear"):
-                for key in list(st.session_state.keys()):
-                    del st.session_state[key]
-                st.rerun()
-                
+# Display modal-like confirmation
+if st.session_state.get("show_clear_modal", False):
+    st.markdown("""
+    <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.6);
+        z-index: 999;
+    "></div>
+    <div style="
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #161b22;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        z-index: 1000;
+        width: 400px;
+        text-align: center;
+        border: 2px solid #DA3633;
+    ">
+        <h3 style='color: #f85149;'>⚠️ Are you sure?</h3>
+        <p style='color: #c9d1d9;'>This will clear all data and reset the app.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        if st.button("✅ Yes, Clear Everything"):
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
+            st.rerun()
+    with col2:
+        if st.button("❌ Cancel"):
+            st.session_state["show_clear_modal"] = False
+
 # Dark Mode CSS + Custom Clear Button Style
 st.markdown("""
 <style>
