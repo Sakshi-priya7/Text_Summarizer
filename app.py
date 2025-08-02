@@ -23,7 +23,7 @@ if not text and text_input:
 
 if text:
     st.markdown("---")
-    summary_type = st.radio("Choose summary type:", ["Abstractive", "Extractive"], horizontal=True)
+    st.markdown("🔍 **Summarization:**")
     length = st.slider("Summary Length (approx. words)", min_value=50, max_value=500, step=10, value=150)
 
     # Add this before st.button()
@@ -32,10 +32,7 @@ if text:
     if st.button("🚀 Generate Summary"):
         cleaned = clean_text(text)
         with st.spinner("Summarizing..."):
-            if summary_type == "Abstractive":
-                summary = abstractive_summary(cleaned, word_limit=length, tone=tone.lower())
-            else:
-                summary = extractive_summary(cleaned, sentence_count=length // 40)
+            summary = abstractive_summary(cleaned, word_limit=length, tone=tone.lower())
         st.subheader("📋 Your Summary")
         st.success(summary)
         # Download as TXT

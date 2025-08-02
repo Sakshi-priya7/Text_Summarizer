@@ -1,10 +1,9 @@
 # 📝 Pro Text Summarizer
 
-A professional NLP-based text summarizer that mimics QuillBot using both extractive (Sumy) and abstractive (BART) techniques.
+A professional NLP-based text summarizer.
 
 ## 🔧 Features
-- ✅ Abstractive Summary (with BART)
-- ✅ Extractive Summary (with Sumy)
+- ✅ Summary (with BART)
 - ✅ File upload: .txt, .pdf, .docx
 - ✅ Clean Streamlit UI
 - ✅ Open-source and deployable
