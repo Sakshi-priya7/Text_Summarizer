@@ -14,9 +14,20 @@ st.title("📝 Text Summarizer")
 
 # Upload Section
 uploaded_file = st.file_uploader("Upload a .txt, .pdf, or .docx file", type=["txt", "pdf", "docx"])
-text_input = st.text_area("Or paste your text here:", height=200)
 
-text = text_input
+# 🆕 Add text input + clear text button side-by-side
+col1, col2 = st.columns([6, 1])
+
+with col1:
+    text_input = st.text_area("Or paste your text here:", height=200)
+
+with col2:
+    if st.button("❌ Clear Text"):
+        text_input = ""
+        st.experimental_rerun()
+
+text = text_input or ""
+
 if uploaded_file:
     if uploaded_file.name.endswith(".pdf"):
         text = read_pdf(uploaded_file)
@@ -113,6 +124,8 @@ h1, h2, h3, h4, h5, h6, .stMarkdown, label, .stTextInput label {
 button {
     background-color: #238636 !important;
     color: white !important;
+    padding: 6px 10px !important;
+    font-size: 13px !important;
 }
 .stDownloadButton {
     border: 1px solid #30363d;
