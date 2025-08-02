@@ -26,8 +26,7 @@ if text:
     st.markdown("🔍 **Summarization:**")
     length = st.slider("Summary Length (approx. words)", min_value=50, max_value=500, step=10, value=150)
 
-    # Add this before st.button()
-    tone = st.selectbox("Select Tone (Abstractive Only)", ["Neutral", "Formal", "Casual", "Simple"])
+    tone = st.selectbox("Select Tone: ", ["Neutral", "Formal", "Casual", "Simple"])
 
     if st.button("🚀 Generate Summary"):
         cleaned = clean_text(text)
