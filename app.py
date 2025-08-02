@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_copy_to_clipboard import copy_to_clipboard
 from summarizer import (
     abstractive_summary,
     generate_bullet_points,
@@ -35,7 +36,7 @@ if not text and text_input:
 # Main UI
 if text:
     st.markdown("---")
-    st.markdown("🔍 *Summarization Settings:*")
+    st.markdown("🔍 Summarization Settings:")
 
     length = st.slider("Summary Length (approx. words)", 50, 500, step=10, value=150)
     tone = st.selectbox("Select Tone:", ["Neutral", "Formal", "Casual", "Simple"])
@@ -45,7 +46,8 @@ if text:
         with st.spinner("Summarizing..."):
             summary = abstractive_summary(cleaned, word_limit=length, tone=tone.lower())
         st.session_state['selected_summary'] = summary
-        st.session_state['history'].append(summary)
+        if summary not in st.session_state['history']:
+            st.session_state['history'].append(summary)
 
 # Display Summary
 if st.session_state['selected_summary']:
@@ -53,41 +55,26 @@ if st.session_state['selected_summary']:
     st.subheader("📋 Your Summary")
     st.success(summary)
 
-    # Copy Button
-    st.markdown(
-        f"""
-        <button onclick=\"navigator.clipboard.writeText({summary})\"
-                style=\"background-color:#00ffae;color:black;padding:10px 20px;
-                       border:none;border-radius:10px;font-weight:bold;
-                       margin-top:10px;cursor:pointer;\">
-            📋 Copy Summary to Clipboard
-        </button>
-        <script>
-            document.querySelector('button').addEventListener('click', () => {{
-                alert('Copied to clipboard!');
-            }});
-        </script>
-        """,
-        unsafe_allow_html=True
-    )
+    # 📋 Copy Button
+    copy_to_clipboard(summary, "📋 Copy Summary")
 
-    # Download Button
+    # 📄 Download Button
     st.download_button("📄 Download Summary", summary, file_name="summary.txt", mime="text/plain")
 
-    # Bullet Points
+    # 🔸 Bullet Points
     st.subheader("🔸 Bullet Points")
     bullets = generate_bullet_points(summary)
-    bullet_html = "<ul>" + "".join(f"<li>{b}</li>" for b in bullets) + "</ul>"
-    st.markdown(bullet_html, unsafe_allow_html=True)
+    for point in bullets:
+        st.markdown(f"- {point}")
 
-    # Stats
+    # 📈 Stats
     st.subheader("📈 Summary Stats")
     stats = get_summary_stats(summary)
-    st.write(f"📝 *Word Count:* {stats['Word Count']}")
-    st.write(f"📏 *Sentence Count:* {stats['Sentence Count']}")
-    st.write(f"🔑 *Top Keywords:* {', '.join(stats['Top Keywords'])}")
+    st.write(f"📝 Word Count: {stats['Word Count']}")
+    st.write(f"📏 Sentence Count: {stats['Sentence Count']}")
+    st.write(f"🔑 Top Keywords: {', '.join(stats['Top Keywords'])}")
 
-    # Word Clouds
+    # 📊 Word Clouds
     st.subheader("📊 Keyword Comparison")
     plot_dual_wordcloud(clean_text(text), summary)
 
@@ -101,7 +88,7 @@ with st.sidebar:
     else:
         st.info("No summaries generated yet.")
 
-# Custom Dark CSS
+# Custom Dark Theme CSS
 st.markdown("""
 <style>
 body, .stApp { background-color: #0d1117; color: #c9d1d9; }
