@@ -21,8 +21,8 @@ def abstractive_summary(text, word_limit=150, tone="neutral"):
     full_prompt = prompt + text
 
     # Approximate token count
-    max_tokens = int(word_limit * 2.3)
-    min_tokens = int(word_limit * 1.8)
+    max_tokens = int(word_limit * 2.0)
+    min_tokens = int(word_limit * 1.5)
 
     result = summarizer(full_prompt, max_length=max_tokens, min_length=min_tokens, do_sample=False)
     return result[0]['summary_text']
