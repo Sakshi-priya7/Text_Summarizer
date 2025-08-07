@@ -30,26 +30,28 @@ def abstractive_summary(text, word_limit=150, tone="neutral"):
 # 🔸 Generate Bullet Point List from Summary
 
 def generate_bullet_points(text):
-    # Step 1: Summarize into short sentences first
-    mini_summary = summarizer(text, max_length=60, min_length=25, do_sample=False)[0]['summary_text']
+    try:
+        # Step 1: Summarize into short sentences first
+        mini_summary = summarizer(text, max_length=60, min_length=25, do_sample=False)[0]['summary_text']
 
-    # Step 2: Extract short phrases or rephrase to insight-style lines
-    phrases = re.split(r'(?<=[.?!])\s+', mini_summary.strip())
+        # Step 2: Extract short phrases or rephrase to insight-style lines
+        phrases = re.split(r'(?<=[.?!])\s+', mini_summary.strip())
 
-    # Step 3: Clean and shorten key phrases
-    bullets = []
-    for phrase in phrases:
-        clean = phrase.strip()
-        if len(clean) > 10 and len(clean.split()) <= 12:
-            bullets.append(clean)
+        # Step 3: Clean and shorten key phrases
+        bullets = []
+        for phrase in phrases:
+            clean = phrase.strip()
+            if len(clean) > 10 and len(clean.split()) <= 12:
+                bullets.append(clean)
 
-    # Step 4: Add emojis to emphasize meaning
-    emojis = ["💡", "🧠", "💪", "🎯", "🔍", "🐦", "🛠", "🚀", "📘"]
-    final_bullets = []
-    for i, line in enumerate(bullets[:5]):  # Top 5 points max
-        final_bullets.append(f"{emojis[i % len(emojis)]} {line}")
+        # Step 4: Add emojis to emphasize meaning
+        emojis = ["💡", "🧠", "💪", "🎯", "🔍", "🐦", "🛠", "🚀", "📘"]
+        final_bullets = [f"{emojis[i % len(emojis)]} {line}" for i, line in enumerate(bullets[:5])]
 
-    return final_bullets
+        return final_bullets or ["⚠️ Unable to generate bullet points."]
+    
+    except Exception as e:
+        return [f"❌ Error generating bullet points: {str(e)}"]
 
 
 # 🔸 Word Count, Sentence Count, Keyword Stats
