@@ -50,7 +50,7 @@ summary = ""
 st.markdown("---")
 st.markdown("🔍 **Summarization Settings:**")
 
-length = st.slider("Summary Length (approx. words)", 50, 500, step=10, value=150)
+length = st.slider("Summary Length (approx. words)", 50, 350, step=5, value=150)
 tone = st.selectbox("Select Tone:", ["Neutral", "Formal", "Casual", "Simple"])
 
 if st.button("🚀 Generate Summary"):
