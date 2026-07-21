@@ -12,6 +12,9 @@ from utils import read_pdf, read_docx, clean_text
 st.set_page_config(page_title="Text Summarizer", layout="wide")
 st.title("📝 Text Summarizer")
 
+if "show_clear_modal" not in st.session_state:
+    st.session_state["show_clear_modal"] = False
+
 # Upload Section
 uploaded_file = st.file_uploader("Upload a .txt, .pdf, or .docx file", type=["txt", "pdf", "docx"])
 
