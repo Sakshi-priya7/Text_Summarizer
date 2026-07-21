@@ -19,14 +19,20 @@ def clean_generated_summary(text):
     
     for s in sentences:
         s_clean = s.strip()
-        if len(s_clean) > 10 and re.search(r'[a-zA-Z]', s_clean):
-            if not re.search(r'(\b\w+\b)(?:\s+\1){2,}', s_clean, re.IGNORECASE):
-                valid_sentences.append(s_clean)
+        if re.search(r'[\'\"].*[\'\"]\s*[\'\"].*[\'\"]', s_clean) or s_clean.count('.') > 3:
+            break
+        if len(s_clean) > 15 and re.search(r'[a-zA-Z]', s_clean):
+            valid_sentences.append(s_clean)
+            
+    result_text = " ".join(valid_sentences)
     
-    return " ".join(valid_sentences)
+    if result_text and not result_text[-1] in ['.', '!', '?']:
+        result_text += '.'
+        
+    return result_text
 
 # 🔸 Summarization Function with Tone Control
-def abstractive_summary(text, word_limit=150, tone="neutral"):
+def abstractive_summary(text, word_limit=100, tone="neutral"):
     tone_prompts = {
         "formal": "Summarize the text formally:\n",
         "casual": "Summarize the text casually:\n",
@@ -39,13 +45,11 @@ def abstractive_summary(text, word_limit=150, tone="neutral"):
 
     # Approximate token count
     max_tokens = int(word_limit * 2.0)
-    min_tokens = int(word_limit * 0.9)
+    min_tokens = int(word_limit * 0.5)
 
-    result = summarizer(full_prompt, max_length=max_tokens, min_length=min_tokens, num_beams=4, length_penalty=1.0, no_repeat_ngram_size=3,truncation=True, do_sample=False)
+    result = summarizer(full_prompt, max_length=max_tokens, min_length=min_tokens, num_beams=4, length_penalty=0.8, no_repeat_ngram_size=3,truncation=True, do_sample=False)
     raw_summary = result[0]['summary_text']
-    cleaned_summary = clean_generated_summary(raw_summary)
-    
-    return cleaned_summary
+    return clean_generated_summary(raw_summary)
 
 # 🔸 Generate Bullet Point List from Summary
 
