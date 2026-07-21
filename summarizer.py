@@ -17,7 +17,7 @@ def abstractive_summary(text, word_limit=150, tone="neutral"):
         "neutral": ""
     }
 
-    prompt = tone_prompts.get(tone, "")
+    prompt = tone_prompts.get(tone, "summarize: ")
     full_prompt = prompt + text
 
     # Approximate token count
