@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 # Load the abstractive summarization model (only once)
-summarizer = pipeline("summarization", model="t5-small")
+summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
 
 # 🔸 Summarization Function with Tone Control
 def abstractive_summary(text, word_limit=150, tone="neutral"):
