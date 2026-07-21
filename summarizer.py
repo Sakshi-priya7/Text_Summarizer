@@ -8,6 +8,23 @@ import streamlit as st
 # Load the abstractive summarization model (only once)
 summarizer = pipeline("summarization", model="t5-small")
 
+def clean_generated_summary(text):
+    text = re.sub(r'[\(\)\[\]\{\}\'\"\;\_]', '', text)
+    text = re.sub(r'\s+([,.?!])', r'\1', text)
+    text = re.sub(r'\.{2,}', '.', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    
+    sentences = re.split(r'(?<=[.?!])\s+', text)
+    valid_sentences = []
+    
+    for s in sentences:
+        s_clean = s.strip()
+        if len(s_clean) > 10 and re.search(r'[a-zA-Z]', s_clean):
+            if not re.search(r'(\b\w+\b)(?:\s+\1){2,}', s_clean, re.IGNORECASE):
+                valid_sentences.append(s_clean)
+    
+    return " ".join(valid_sentences)
+
 # 🔸 Summarization Function with Tone Control
 def abstractive_summary(text, word_limit=150, tone="neutral"):
     tone_prompts = {
@@ -22,10 +39,13 @@ def abstractive_summary(text, word_limit=150, tone="neutral"):
 
     # Approximate token count
     max_tokens = int(word_limit * 2.0)
-    min_tokens = int(word_limit * 1.5)
+    min_tokens = int(word_limit * 0.9)
 
-    result = summarizer(full_prompt, max_length=max_tokens, min_length=min_tokens, num_beams=4, length_penalty=2.0, no_repeat_ngram_size=3,truncation=True, do_sample=False)
-    return result[0]['summary_text']
+    result = summarizer(full_prompt, max_length=max_tokens, min_length=min_tokens, num_beams=4, length_penalty=1.0, no_repeat_ngram_size=3,truncation=True, do_sample=False)
+    raw_summary = result[0]['summary_text']
+    cleaned_summary = clean_generated_summary(raw_summary)
+    
+    return cleaned_summary
 
 # 🔸 Generate Bullet Point List from Summary
 
