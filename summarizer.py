@@ -14,17 +14,17 @@ def abstractive_summary(text, word_limit=150, tone="neutral"):
         "formal": "Summarize the text formally:\n",
         "casual": "Summarize the text casually:\n",
         "simple": "Summarize the text in simple language:\n",
-        "neutral": ""
+        "neutral": "Summarize the text:\n"
     }
 
     prompt = tone_prompts.get(tone, "summarize: ")
-    full_prompt = prompt + text
+    full_prompt = prompt + text.strip()
 
     # Approximate token count
     max_tokens = int(word_limit * 2.0)
     min_tokens = int(word_limit * 1.5)
 
-    result = summarizer(full_prompt, max_length=max_tokens, min_length=min_tokens, num_beams=4, length_penalty=2.0, no_repeat_ngram_size=3, do_sample=False)
+    result = summarizer(full_prompt, max_length=max_tokens, min_length=min_tokens, num_beams=4, length_penalty=2.0, no_repeat_ngram_size=3,truncation=True, do_sample=False)
     return result[0]['summary_text']
 
 # 🔸 Generate Bullet Point List from Summary
