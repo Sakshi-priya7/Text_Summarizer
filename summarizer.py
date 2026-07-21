@@ -24,7 +24,7 @@ def abstractive_summary(text, word_limit=150, tone="neutral"):
     max_tokens = int(word_limit * 2.0)
     min_tokens = int(word_limit * 1.5)
 
-    result = summarizer(full_prompt, max_length=max_tokens, min_length=min_tokens, do_sample=False)
+    result = summarizer(full_prompt, max_length=max_tokens, min_length=min_tokens, num_beams=4, length_penalty=2.0, no_repeat_ngram_size=3, do_sample=False)
     return result[0]['summary_text']
 
 # 🔸 Generate Bullet Point List from Summary
